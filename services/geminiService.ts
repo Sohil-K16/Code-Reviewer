@@ -1,41 +1,29 @@
-
-import { GoogleGenAI } from "@google/genai";
-
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export async function reviewCode(code: string, language: string): Promise<string> {
-  const prompt = `
-    As an expert code reviewer, please analyze the following ${language} code snippet. 
-    Provide a thorough review focusing on:
-    1.  **Potential Bugs & Errors:** Identify any logical errors, edge cases not handled, or potential runtime issues.
-    2.  **Performance Optimization:** Suggest ways to improve the code's efficiency and speed.
-    3.  **Best Practices & Readability:** Comment on code style, naming conventions, and overall clarity. Suggest improvements for maintainability.
-    4.  **Security Vulnerabilities:** Point out any potential security risks.
-
-    Format your response in clear, actionable markdown. Use code blocks for suggestions.
-
-    Code to review:
-    \`\`\`${language}
-    ${code}
-    \`\`\`
-    `;
-
   try {
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
+    const response = await fetch('/api/review', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, language }),
     });
-    
-    return response.text;
-  } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    if (error instanceof Error) {
-        throw new Error(`Gemini API Error: ${error.message}`);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+      throw new Error(errorData.error || `Request failed with status ${response.status}`);
     }
-    throw new Error("An unexpected error occurred while communicating with the Gemini API.");
+
+    const data = await response.json();
+    if (!data.feedback) {
+      throw new Error("Invalid response format from server.");
+    }
+    
+    return data.feedback;
+  } catch (error) {
+    console.error("Error calling backend API:", error);
+    if (error instanceof Error) {
+        throw new Error(`API Communication Error: ${error.message}`);
+    }
+    throw new Error("An unexpected error occurred while communicating with the backend.");
   }
 }
