@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LANGUAGES } from '../constants';
 import { LoaderIcon } from './icons/LoaderIcon';
@@ -12,6 +11,12 @@ interface CodeInputProps {
   isLoading: boolean;
 }
 
+const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" {...props}>
+        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+    </svg>
+);
+
 const CodeInput: React.FC<CodeInputProps> = ({
   code,
   setCode,
@@ -22,26 +27,32 @@ const CodeInput: React.FC<CodeInputProps> = ({
 }) => {
   return (
     <div className="bg-surface rounded-lg border border-border-color shadow-lg flex flex-col h-full">
-      <div className="p-4 border-b border-border-color flex items-center justify-between">
+      <div className="p-4 border-b border-border-color flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-text-main">Your Code</h2>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="bg-brand-bg border border-border-color rounded-md px-3 py-1 text-text-secondary focus:ring-2 focus:ring-primary focus:outline-none"
-        >
-          {LANGUAGES.map((lang) => (
-            <option key={lang.value} value={lang.value}>
-              {lang.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="appearance-none bg-brand-bg border border-border-color rounded-md pl-3 pr-8 py-2 text-text-main focus:ring-2 focus:ring-primary focus:outline-none"
+            aria-label="Select programming language"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.value} value={lang.value}>
+                {lang.label}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-secondary">
+            <ChevronDownIcon className="h-5 w-5" />
+          </div>
+        </div>
       </div>
-      <div className="flex-grow p-1">
+      <div className="flex-grow">
         <textarea
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder={`// Paste your ${language} code here...`}
-          className="w-full h-full bg-surface text-text-main resize-none p-3 font-mono text-sm focus:outline-none"
+          placeholder={`Paste your ${language} code here...`}
+          className="w-full h-full bg-surface text-text-main resize-none p-4 font-mono text-sm focus:outline-none placeholder-text-secondary"
           style={{ minHeight: '400px' }}
         />
       </div>
@@ -49,7 +60,7 @@ const CodeInput: React.FC<CodeInputProps> = ({
         <button
           onClick={onSubmit}
           disabled={isLoading}
-          className="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center transition-colors duration-300 hover:bg-primary-hover disabled:bg-gray-500 disabled:cursor-not-allowed"
+          className="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center transition-all duration-300 hover:bg-primary-hover disabled:bg-gray-600 disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface focus:ring-primary"
         >
           {isLoading ? (
             <>

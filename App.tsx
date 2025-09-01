@@ -1,10 +1,10 @@
-
 import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
 import CodeInput from './components/CodeInput';
 import FeedbackDisplay from './components/FeedbackDisplay';
 import { reviewCode } from './services/geminiService';
 import { LANGUAGES } from './constants';
+import DotGridBackground from './components/DotGridBackground';
 
 const App: React.FC = () => {
   const [code, setCode] = useState<string>('');
@@ -35,9 +35,10 @@ const App: React.FC = () => {
   }, [code, language]);
 
   return (
-    <div className="min-h-screen bg-brand-bg font-sans flex flex-col">
+    <div className="min-h-screen bg-brand-bg font-sans flex flex-col relative">
+      <DotGridBackground />
       <Header />
-      <main className="flex-grow container mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="flex-grow container mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 z-10">
         <div className="flex flex-col">
           <CodeInput
             code={code}
